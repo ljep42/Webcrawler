@@ -6,8 +6,8 @@ import re
 
 # firefox
 fireFoxOptions = webdriver.FirefoxOptions()
-fireFoxOptions.headless = True
-browser = webdriver.Firefox(executable_path='.\Drivers\geckodriver.exe',options=fireFoxOptions)
+fireFoxOptions.headless = True  # opens firefox silently
+browser = webdriver.Firefox(executable_path='.\Drivers\geckodriver.exe',options=fireFoxOptions) # uses Gecko driver
 
 # chrome
 # chromeOpts = webdriver.ChromeOptions()
@@ -58,10 +58,9 @@ for i in range(1,max_pages+1):
 
     cnt += min(len(res[str(i)]['prices']),len(res[str(i)]['conditions']),len(res[str(i)]['titles']))
     
-
+# re order data structure
 final = {}
 k = 0
-
 for j in range(1,max_pages+1):
     pgcnt = min(len(res[str(j)]['prices']),len(res[str(j)]['conditions']),len(res[str(j)]['titles']))
     m = 1
@@ -70,18 +69,14 @@ for j in range(1,max_pages+1):
         final[k]['price'] = int(re.sub(r'[a-zA-Z]','',res[str(j)]['prices'][k%pgcnt]).replace('$','').strip())
         final[k]['condition'] = res[str(j)]['conditions'][k%pgcnt].strip()
         final[k]['title'] = res[str(j)]['titles'][k%pgcnt].strip()
-        final[k]['location'] = res[str(j)]['locs'][k%pgcnt].strip()
+        #final[k]['location'] = res[str(j)]['locs'][k%pgcnt].strip()
         k += 1
         m += 1
-
-# # convert to int
-# for d in final.items():
-#     # get 2nd element [1] and key price
-#     d[1]['price'] = int(d[1]['price'])
 
 # sort by price for each item
 final = sorted(final.items(), key= lambda x: x[1]['price'])    
 
+# quit browser object, dump data, and close file
 browser.quit()
 json = json.dumps(final)
 f = open('./ads.json', 'w')
